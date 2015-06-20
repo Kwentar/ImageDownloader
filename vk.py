@@ -1,5 +1,4 @@
 import json
-import os
 from urllib.parse import urlencode
 from urllib.request import urlopen
 import time
@@ -16,8 +15,8 @@ class VkError(Exception):
 
 
 class Vk:
-    tokens = [setup.access_token, setup.access_token2,
-              setup.access_token3, setup.access_token4, setup.access_token5]
+    tokens = setup.tokens
+    curr_token = ''
     p = Profiler()
 
     @staticmethod
@@ -39,13 +38,14 @@ class Vk:
             response = urlopen(test_url).read()
             result = json.loads(response.decode('utf-8'))
             if 'response' in result.keys():
-                print('now I use the {} token' % el)
+                print('now I use the ' + el + ' token')
                 return el
         raise VkError('all tokens are invalid: ' + result['error']['error_msg'].__str__())
 
     @staticmethod
     def call_api(method, params):
-        token = Vk.get_token()
+        if not Vk.curr_token:
+            Vk.curr_token = Vk.get_token()
         if isinstance(params, list):
             params_list = params[:]
         elif isinstance(params, dict):
@@ -53,7 +53,7 @@ class Vk:
         else:
             params_list = [params]
 
-        params_list += [('access_token', token)]
+        params_list += [('access_token', Vk.curr_token)]
         url = 'https://api.vk.com/method/%s?%s' % (method, urlencode(params_list))
 
         response = urlopen(url).read()
@@ -65,7 +65,7 @@ class Vk:
                 raise VkError('no response on answer: ' + result['error']['error_msg'].__str__())
         except VkError as err:
             print(err.value)
-            Vk.get_token()
+            Vk.curr_token = Vk.get_token()
             Vk.call_api(method, params)
             return list()
 

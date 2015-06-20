@@ -28,12 +28,16 @@ def get_images_from_request(req, count):
                     res.append(b[:-1])
     return res
 
+# key words for bing
 key_words = ['beautiful girl', 'cute girl']
+count_for_each = 300
+# dir for images
+dir_ = "D:\\Graphics\\Download\\"
 for word in key_words:
-    res = get_images_from_request(word, 300)
+    res = get_images_from_request(word, count_for_each)
     for a in res:
         try:
-            d = "D:\\Graphics\\Download\\" + word + '\\'
+            d = dir_ + word + '\\'
             try:
                 os.stat(d)
             except:

@@ -1,14 +1,11 @@
 import os
 from Internet import Internet
-import __setup_photo__ as setup
 from vk import Vk
 
 
 vk_dir = 'D:\\Graphics\\vk\\'
 need_reload_file = 'D:\\Graphics\\vk\\need_reload.txt'
 downloaded_users_file = 'D:\\Graphics\\vk\\downloaded_users.txt'
-access_token = setup.access_token2
-
 
 def check_in_file(uid, lst):
     founded = False
@@ -47,7 +44,6 @@ def download_users(age_from, age_to, city_id):
                         print('We have this user!')
                     else:
                         get_profile_photos(uid, vk_dir)
-
 
 download_users(19, 24, 10)
 
