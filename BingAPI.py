@@ -1,6 +1,7 @@
 import os
 import urllib.request as urllib2
 import urllib
+import __setup_photo__ as setup
 
 
 def get_images_from_request(req, count):
@@ -11,7 +12,8 @@ def get_images_from_request(req, count):
         root_url = "https://api.datamarket.azure.com/Bing/Search/v1/"
         search_url = root_url + "Image?$format=json&Query=" + quoted_query
         search_url += "&$skip="+i.__str__()
-        acc_key = 'lPBhp82butYbmwgaXsIkdJXA/1rQwz5REwcuJeoLF1c'
+        #change it on your acc_key
+        acc_key = setup.bing_acc_key
         password_mgr = urllib2.HTTPPasswordMgrWithDefaultRealm()
         password_mgr.add_password(None, search_url, acc_key, acc_key)
 
