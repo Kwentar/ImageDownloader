@@ -17,7 +17,7 @@ class VkError(Exception):
 
 
 class VkUser:
-    def __init__(self, uid, name, last_name, day_b, month_b, sex, age):
+    def __init__(self, uid, name, last_name, day_b, month_b, sex, age, city_id):
         self.uid = uid
         self.name = name
         self.last_name = last_name
@@ -28,10 +28,14 @@ class VkUser:
             year_b - 1
         self.year_b = year_b
         self.sex = sex
+        self.city_id = city_id
 
     def __str__(self):
         return ";".join([self.uid, self.name, self.last_name, self.day_b.__str__(),
-                         self.month_b.__str__(), self.year_b.__str__(), self.sex.__str__()])
+                         self.month_b.__str__(), self.year_b.__str__(), self.sex.__str__(), self.city_id.__str__()])
+
+    def get_age(self):
+        return date.today().year - self.year_b
 
 
 class Vk:
@@ -40,9 +44,9 @@ class Vk:
     p = Profiler()
 
     @staticmethod
-    def check_time():
-        if Vk.p.get_time() < 0.5:
-            time.sleep(0.5)
+    def check_time(value=0.5):
+        if Vk.p.get_time() < value:
+            time.sleep(value)
         Vk.p.start()
 
     @staticmethod
@@ -53,20 +57,22 @@ class Vk:
     @staticmethod
     def get_token():
         for el in Vk.tokens:
-            test_url = 'https://api.vk.com/method/getProfiles?uid=66748&access_token=' + el
-            Vk.check_time()
-            response = urlopen(test_url).read()
-            result = json.loads(response.decode('utf-8'))
-            if 'response' in result.keys():
-                print('now I use the ' + el + ' token')
-                return el
+            if el != Vk.curr_token:
+                test_url = 'https://api.vk.com/method/getProfiles?uid=66748&access_token=' + el
+                Vk.check_time(10)
+                response = urlopen(test_url).read()
+                result = json.loads(response.decode('utf-8'))
+                if 'response' in result.keys():
+                    print('now I use the ' + el + ' token')
+                    Vk.curr_token = el
+                    return el
         raise VkError('all tokens are invalid: ' + result['error']['error_msg'].__str__())
 
     @staticmethod
     def call_api(method, params):
         Vk.check_time()
-        if not Vk.curr_token:
-            Vk.curr_token = Vk.get_token()
+        while not Vk.curr_token:
+            Vk.get_token()
         if isinstance(params, list):
             params_list = params[:]
         elif isinstance(params, dict):
@@ -112,13 +118,56 @@ class Vk:
             if count and 'uid' in el.keys():
                 user = VkUser(uid=el['uid'].__str__(), name=el['first_name'].__str__(),
                               last_name=el['last_name'].__str__(), sex=el['sex'].__str__(),
-                              day_b=day, month_b=month, age=age)
+                              day_b=day, month_b=month, age=age, city_id=city_id)
                 users.append(user)
             else:
                 count = el
         if count > 1000:
             Vk.warning('''Count more than 1000, count = {}, age = {},
                         month = {}, day = {}'''.format(count, age, month, day))
+        return users
+
+    @staticmethod
+    def get_friends(uid, fields='city,bdate,sex'):
+        search_q = list()
+        search_q.append(('user_id', uid))
+        search_q.append(('offset', '0'))
+        search_q.append(('count', '1000'))
+        search_q.append(('fields', fields))
+        r = Vk.call_api('friends.get', search_q)
+        count = len(r)
+        users = list()
+        for el in r:
+            if 'user_id' in el.keys():
+                if 'deactivated' in el.keys():
+                    continue
+                uid = el['user_id'].__str__()
+                last_name = 'None'
+                sex = 'None'
+                name = 'None'
+                city_id = 'None'
+                day, month, age = [0, 0, 0]
+                if 'last_name' in el.keys():
+                    last_name = el['last_name'].__str__()
+                if 'first_name' in el.keys():
+                    name = el['first_name'].__str__()
+                if 'sex' in el.keys():
+                    sex = el['sex'].__str__()
+                if 'city' in el.keys():
+                    city_id = el['city'].__str__()
+                if 'bdate' in el.keys():
+                    bdate = el['bdate'].__str__().split('.')
+                    if len(bdate) > 2:
+                        day, month, age = map(int, bdate)
+                        age = date.today().year - age
+                    else:
+                        day, month = map(int, bdate)
+
+                user = VkUser(uid=uid, name=name, last_name=last_name, sex=sex, day_b=day,
+                              month_b=month, age=age, city_id=city_id)
+                users.append(user)
+        if count > 1000:
+            Vk.warning('Count more than 1000')
         return users
 
     @staticmethod
