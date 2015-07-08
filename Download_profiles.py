@@ -1,6 +1,6 @@
 import os
 from Internet import Internet
-from vk import Vk
+from vk import Vk, VkUser
 
 
 vk_dir = 'F:\\vk\\'
@@ -16,6 +16,20 @@ def check_in_file(uid, lst):
             founded = True
             break
     return founded
+
+
+def get_user_info_from_list(uid, lst):
+    user = None
+    for el in lst:
+        if el.startswith(uid):
+            try:
+                uid, name, last_name, day_b, month_b, sex, year_b, city_id = el[:-1].split(';')
+                user = VkUser(uid, name, last_name, int(day_b), int(month_b), sex, city_id, year_b=int(year_b))
+                break
+            except:
+                print('except ' + el)
+
+    return user
 
 
 def get_profile_photos(id_, start_dir, downloaded_users_file):
@@ -38,9 +52,26 @@ def write_users_to_file(need_to_write_users, users_info_file_friends):
 
 
 def get_lists_from_file(file_name):
-    with open(file_name, 'a+') as downloaded_users:
-        downloaded_users.seek(0)
-        return downloaded_users.readlines()
+    try:
+        with open(file_name, 'a+', encoding='utf-8') as downloaded_users:
+            downloaded_users.seek(0)
+            return downloaded_users.readlines()
+    except FileNotFoundError as err_:
+        print(err_.strerror)
+        return list()
+
+
+def get_users_from_file(file_name):
+    users = list()
+    lst = get_lists_from_file(file_name)
+    for el in lst:
+        try:
+            uid, name, last_name, day_b, month_b, sex, year_b, city_id = el[:-1].split(';')
+            user = VkUser(uid, name, last_name, int(day_b), int(month_b), sex, city_id, year_b=int(year_b))
+            users.append(user)
+        except ValueError as err:
+            print('except ' + err.__str__() + ' ' + el)
+    return users
 
 
 def write_users_in_file(file_name, users, open_mode='a+'):
@@ -76,43 +107,43 @@ def download_users(age_from, age_to, city_id, downloaded_users_file):
                 write_users_to_file(need_to_write_users, users_info_file)
 
 
-def downloaded_friends(start_id, dir_, deep=1):
+def downloaded_friends(user_ids, dir_, deep=2):
     downloaded_users_file_friends = os.path.join(dir_, 'downloaded_users.txt')
     users_info_file_friends = os.path.join(dir_, 'user_info.txt')
     downloaded_users_list = get_lists_from_file(downloaded_users_file_friends)
     users_info_list = get_lists_from_file(users_info_file_friends)
-    while True:
-        users = Vk.get_friends(start_id)
-        if users:
-            break
-        Vk.get_token()
-    if not check_in_file(start_id, downloaded_users_list):
-        get_profile_photos(start_id, dir_, downloaded_users_file_friends)
-    need_to_write_users = list()
-    write_users_in_file(os.path.join(dir_, start_id + '\\friends.txt'), users, open_mode='w')
     count = 0
-    for user in users:
+    next_iter_uids = set()
+    for uid in user_ids:
         count += 1
-        if not check_in_file(user.uid, downloaded_users_list):
-            get_profile_photos(user.uid, dir_,  downloaded_users_file_friends)
-        if check_in_file(user.uid, users_info_list):
-            print('We have this user in info too! ' + user.name + ' ' + user.last_name)
+        if not check_in_file(uid, downloaded_users_list):
+            get_profile_photos(uid, dir_, downloaded_users_file_friends)
+        user = get_user_info_from_list(uid, users_info_list)
+        if user is not None:
+            print('We have this user in info too! ' + user.name + ' ' + user.last_name + ' (id ' +
+                  user.uid.__str__() + '), ' + count.__str__() + '\\' + len(user_ids).__str__())
+            users = get_users_from_file(os.path.join(dir_, uid + '\\friends.txt'))
         else:
-            print('added info ' + user.name + ' ' + user.last_name + ' (friend of ' + start_id.__str__() + '), '
-                  + count.__str__() + '\\' + len(users).__str__())
-            need_to_write_users.append(user)
-        while True:
-            user_fr = Vk.get_friends(user.uid)
-            if user_fr:
-                break
-            Vk.get_token()
-        write_users_in_file(os.path.join(dir_, user.uid + '\\friends.txt'), user_fr, open_mode='w')
-        if deep:
-            downloaded_friends(user.uid, dir_, deep-1)
-    write_users_to_file(need_to_write_users, users_info_file_friends)
+            user = Vk.get_user_info(uid)
+            if user is not None:
+                print('added info ' + user.name + ' ' + user.last_name + ' (id ' + user.uid.__str__() + '), '
+                      + count.__str__() + '\\' + len(user_ids).__str__())
+                write_users_to_file([user], users_info_file_friends)
+                for i in range(3):
+                    users = Vk.get_friends(uid)
+                    if users:
+                        break
+                    Vk.get_token()
+                write_users_in_file(os.path.join(dir_, uid + '\\friends.txt'), users, open_mode='w')
+        if deep > 0:
+            next_iter_uids = next_iter_uids | set([user.uid for user in users])
+
+    if next_iter_uids:
+        downloaded_friends(next_iter_uids, dir_, deep-1)
 
 
-downloaded_friends('11152217', 'F:\\vk\\friends\\')
+downloaded_friends(['11152217'], 'F:\\vk\\friends\\')
+print('I really did it oO')
 # download_users(23, 23, 10, 'F:\\vk\\downloaded_users.txt')
 
 
