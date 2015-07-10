@@ -1,12 +1,20 @@
 import os
 from Internet import Internet
 from vk import Vk, VkUser
+from sys import platform as _platform
 
+if _platform == "linux" or _platform == "linux2":
+    vk_dir = '/media/kwent/A278648A78645F53/vk'
+    need_reload_file = '/media/kwent/A278648A78645F53/vk/need_reload.txt'
+    users_info_file = '/media/kwent/A278648A78645F53/vk/downloaded_users_info.txt'
+    friends_dir = '/media/kwent/A278648A78645F53/vk/friends'
 
-vk_dir = 'F:\\vk\\'
-need_reload_file = 'F:\\vk\\need_reload.txt'
-#downloaded_users_file = 'F:\\vk\\downloaded_users.txt'
-users_info_file = 'F:\\vk\\downloaded_users_info.txt'
+elif _platform == "win32":
+    vk_dir = 'F:\\vk\\'
+    need_reload_file = 'F:\\vk\\need_reload.txt'
+    #downloaded_users_file = 'F:\\vk\\downloaded_users.txt'
+    users_info_file = 'F:\\vk\\downloaded_users_info.txt'
+    friends_dir = 'F:\\vk\\friends\\'
 
 
 def check_in_file(uid, lst):
@@ -122,7 +130,9 @@ def downloaded_friends(user_ids, dir_, deep=2):
         if user is not None:
             print('We have this user in info too! ' + user.name + ' ' + user.last_name + ' (id ' +
                   user.uid.__str__() + '), ' + count.__str__() + '\\' + len(user_ids).__str__())
-            users = get_users_from_file(os.path.join(dir_, uid + '\\friends.txt'))
+            user_friends_file = os.path.join(dir_, uid)
+            user_friends_file = os.path.join(user_friends_file, 'friends.txt')
+            users = get_users_from_file(user_friends_file)
         else:
             user = Vk.get_user_info(uid)
             if user is not None:
@@ -134,7 +144,9 @@ def downloaded_friends(user_ids, dir_, deep=2):
                     if users:
                         break
                     Vk.get_token()
-                write_users_in_file(os.path.join(dir_, uid + '\\friends.txt'), users, open_mode='w')
+                path_to_write = os.path.join(dir_, uid)
+                path_to_write = os.path.join(path_to_write, 'friends.txt')
+                write_users_in_file(path_to_write, users, open_mode='w')
         if deep > 0:
             next_iter_uids = next_iter_uids | set([user.uid for user in users])
 
@@ -142,7 +154,7 @@ def downloaded_friends(user_ids, dir_, deep=2):
         downloaded_friends(next_iter_uids, dir_, deep-1)
 
 
-downloaded_friends(['11152217'], 'F:\\vk\\friends\\')
+downloaded_friends(['11152217'], friends_dir, deep=3)
 print('I really did it oO')
 # download_users(23, 23, 10, 'F:\\vk\\downloaded_users.txt')
 

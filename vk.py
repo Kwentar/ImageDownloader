@@ -63,12 +63,15 @@ class Vk:
             if el != Vk.curr_token:
                 test_url = 'https://api.vk.com/method/getProfiles?uid=66748&access_token=' + el
                 Vk.check_time(1)
-                response = urlopen(test_url).read()
-                result = json.loads(response.decode('utf-8'))
-                if 'response' in result.keys():
-                    print('now I use the ' + el + ' token')
-                    Vk.curr_token = el
-                    return el
+                try:
+                    response = urlopen(test_url).read()
+                    result = json.loads(response.decode('utf-8'))
+                    if 'response' in result.keys():
+                        print('now I use the ' + el + ' token')
+                        Vk.curr_token = el
+                        return el
+                except http.client.BadStatusLine as err_:
+                    print("".join(['ERROR Vk.get_token', err_.__str__()]))
         raise VkError('all tokens are invalid: ' + result['error']['error_msg'].__str__())
 
     @staticmethod
@@ -94,14 +97,14 @@ class Vk:
                     return result['response']
                 else:
                     raise VkError('no response on answer: ' + result['error']['error_msg'].__str__())
-            except VkError as err:
-                print(err.value)
+            except VkError as err_:
+                print(err_.value)
                 Vk.curr_token = Vk.get_token()
                 # Vk.call_api(method, params)
-        except URLError as err:
-            print('URLError: ' + err.errno.__str__() + ", " + err.reason.__str__())
-        except http.client.BadStatusLine as err:
-            print('URLError: BadStatusLine')
+        except URLError as err_:
+            print('URLError: ' + err_.errno.__str__() + ", " + err_.reason.__str__())
+        except http.client.BadStatusLine as err_:
+            print("".join(['ERROR Vk.call_api', err_.__str__()]))
 
         return list()
 
