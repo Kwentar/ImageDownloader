@@ -154,7 +154,7 @@ def downloaded_friends(user_ids, dir_, deep=2):
         downloaded_friends(next_iter_uids, dir_, deep-1)
 
 
-downloaded_friends(['11152217'], friends_dir, deep=3)
+downloaded_friends(['11152217'], friends_dir)
 print('I really did it oO')
 # download_users(23, 23, 10, 'F:\\vk\\downloaded_users.txt')
 
