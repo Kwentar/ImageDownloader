@@ -5,23 +5,30 @@ import urllib
 
 class Internet:
     @staticmethod
+    def write_to_need_reload(file_name, image, need_reload_file):
+        with open(need_reload_file, 'a+') as need_reload:
+            need_reload.seek(0)
+            lines = need_reload.readlines()
+            founded = False
+            for line in lines:
+                if line.startswith(image):
+                    print('File is here')
+                    founded = True
+                    break
+            if not founded:
+                need_reload.write(image + "," + file_name + '\n')
+
+    @staticmethod
     def load_image(image, file_name, need_reload_file):
         try:
             urllib.request.urlretrieve(image, file_name)
             print("".join(['downloaded ', image]))
         except urllib.error.ContentTooShortError as err_:
             print("".join(['ERROR ', err_.__str__()]))
-            with open(need_reload_file, 'a+') as need_reload:
-                    need_reload.seek(0)
-                    lines = need_reload.readlines()
-                    founded = False
-                    for line in lines:
-                        if line.startswith(image):
-                            print('File is here')
-                            founded = True
-                            break
-                    if not founded:
-                        need_reload.write(image + "," + file_name + '\n')
+            Internet.write_to_need_reload(file_name, image, need_reload_file)
+        except urllib.error.URLError as err_:
+            print("".join(['ERROR ', err_.__str__()]))
+            Internet.write_to_need_reload(file_name, image, need_reload_file)
 
     @staticmethod
     def load_images(images, dir_, need_reload_file):
