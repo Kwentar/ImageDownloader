@@ -158,7 +158,7 @@ def downloaded_friends(user_ids, dir_, deep=2):
 
 # downloaded_friends(['11152217'], friends_dir, deep=3)
 # print('I really did it oO')
-ImageProcessor.get_faces('D:\\Graphics\\TestPhotos\\100155084')
+ImageProcessor.get_faces('D:\\Not work projects\\vk')
 # download_users(23, 23, 10, 'F:\\vk\\downloaded_users.txt')
 
 
