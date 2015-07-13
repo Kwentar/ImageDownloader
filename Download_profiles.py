@@ -1,4 +1,5 @@
 import os
+import ImageProcessor
 from Internet import Internet
 from vk import Vk, VkUser
 from sys import platform as _platform
@@ -154,8 +155,10 @@ def downloaded_friends(user_ids, dir_, deep=2):
         downloaded_friends(next_iter_uids, dir_, deep-1)
 
 
-downloaded_friends(['11152217'], friends_dir)
-print('I really did it oO')
+
+# downloaded_friends(['11152217'], friends_dir, deep=3)
+# print('I really did it oO')
+ImageProcessor.get_faces('D:\\Graphics\\TestPhotos\\100155084')
 # download_users(23, 23, 10, 'F:\\vk\\downloaded_users.txt')
 
 
