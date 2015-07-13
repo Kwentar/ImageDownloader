@@ -45,11 +45,9 @@ for word in key_words:
             except:
                 os.mkdir(d)
             f = d + a.split('/')[-1]
-            if not os.path.exists(f):
-                urllib.request.urlretrieve(a, f)
-                print(a)
-            else:
-                print('exist now ' + a)
+            urllib.request.urlretrieve(a, f)
+            print(a)
+
         except:
             print('- ' + a)
 
