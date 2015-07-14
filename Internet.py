@@ -25,10 +25,12 @@ class Internet:
             print("".join(['downloaded ', image]))
         except urllib.error.ContentTooShortError as err_:
             print("".join(['ERROR ', err_.__str__()]))
-            Internet.write_to_need_reload(file_name, image, need_reload_file)
+            if need_reload_file is not None:
+                Internet.write_to_need_reload(file_name, image, need_reload_file)
         except urllib.error.URLError as err_:
             print("".join(['ERROR ', err_.__str__()]))
-            Internet.write_to_need_reload(file_name, image, need_reload_file)
+            if need_reload_file is not None:
+                Internet.write_to_need_reload(file_name, image, need_reload_file)
 
     @staticmethod
     def load_images(images, dir_, need_reload_file):
