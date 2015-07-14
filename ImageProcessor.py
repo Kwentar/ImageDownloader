@@ -40,16 +40,20 @@ def get_faces(dir_):
     image_exts = ['.jpeg', '.jpg', '.png', '.gif', '.jpeg']
     count = 0
     p = Profiler()
-    p.start()
     dirs = list()
+    count_dir = 0
     for (root_dir, folders, files) in os.walk(dir_):
         if ('faces' in folders and len(folders) == 1 or not len(folders)) and os.path.split(root_dir)[-1] != 'faces':
             faces_txt_path = os.path.join(root_dir, 'faces', 'faces.txt')
             if os.path.exists(faces_txt_path):
-                print('this user has been processed ' + root_dir)
+                # print('this user has been processed ' + root_dir)
                 continue
+            count_dir += 1
+            if count_dir % 100 == 0:
+                print('now I get ' + count_dir.__str__() + ' folders')
             dirs.append(root_dir)
     count_person = len(dirs)
+    p.start()
     for curr_dir in dirs:
         image_files = list()
         files = os.listdir(curr_dir)
@@ -65,5 +69,5 @@ def get_faces(dir_):
               format(count,
                      round(count / count_person * 100, 3),
                      round(p.get_time() / 60, 3),
-                     round(p.get_time() * count_person / count / 60), 3))
+                     round(p.get_time() * count_person / count / 60, 3)))
     print('all time is ' + round(p.get_time() / 60, 3).__str__())
