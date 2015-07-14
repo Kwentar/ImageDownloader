@@ -1,6 +1,8 @@
 import os
+import shutil
 from threading import Thread
 import urllib
+import requests
 
 
 class Internet:
@@ -19,6 +21,26 @@ class Internet:
                 need_reload.write(image + "," + file_name + '\n')
 
     @staticmethod
+    def load_image_chunk(image, file_name, need_reload_file):
+        r = requests.get(image, stream=True)
+        if r.status_code == 200:
+            with open(file_name, 'wb') as f:
+                for chunk in r.iter_content(chunk_size=512):
+                    f.write(chunk)
+        else:
+            print(r)
+
+    @staticmethod
+    def load_image2(image, file_name, need_reload_file):
+        r = requests.get(image, stream=True)
+        if r.status_code == 200:
+            with open(file_name, 'wb') as f:
+                r.raw.decode_content = True
+                shutil.copyfileobj(r.raw, f)
+        else:
+            print(r)
+
+    @staticmethod
     def load_image(image, file_name, need_reload_file):
         try:
             urllib.request.urlretrieve(image, file_name)
@@ -33,11 +55,13 @@ class Internet:
                 Internet.write_to_need_reload(file_name, image, need_reload_file)
 
     @staticmethod
-    def load_images(images, dir_, need_reload_file):
+    def load_images(images, dir_, need_reload_file, delay=5, load_image_func=load_image_chunk):
         for image in images:
             f = os.path.join(dir_, image.split('/')[-1])
-            t = Thread(target=Internet.load_image, args=(image, f, need_reload_file))
+            t = Thread(target=Internet.load_image_chunk, args=(image, f, need_reload_file))
             t.start()
-            t.join(5)
+            t.join(delay)
             if t.isAlive():
                 print('Bad, bad thread!')
+                if need_reload_file is not None:
+                    Internet.write_to_need_reload(f, image, need_reload_file)
