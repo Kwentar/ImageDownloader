@@ -35,6 +35,19 @@ def get_faces_from_dir(files, faces_dir, cascade):
             faces_file.write(face.__str__() + os.linesep)
 
 
+def get_count_faces(dir_):
+    count = 0
+    count_of_person = 0
+    for (root_dir, folders, files) in os.walk(dir_):
+        if os.path.split(root_dir)[-1] == 'faces':
+            cur_count = len([f for f in os.listdir(root_dir) if 'txt' not in f])
+            count += cur_count
+            count_of_person += 1
+            if count_of_person % 100 == 0:
+                print('now I get ' + count_of_person.__str__() + ' people, current I get ' + count + 'faces')
+    return count
+
+
 def get_faces(dir_):
     cascade = cv2.CascadeClassifier(setup.cascade_path)
     image_exts = ['.jpeg', '.jpg', '.png', '.gif', '.jpeg']
