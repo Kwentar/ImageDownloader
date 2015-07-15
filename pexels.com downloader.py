@@ -39,7 +39,7 @@ while curr_id < max_count_photos:
         time.sleep(1)
     else:
         print('Download photo...')
-        Internet.Internet.load_images([image_url], pexels_dir, os.path.join(pexels_dir, 'need_reload.txt'), delay=60)
+        Internet.Internet.load_images([image_url], pexels_dir, os.path.join(pexels_dir, 'need_reload.txt'), delay=300)
     with open(os.path.join(pexels_dir, 'ids.txt'), 'a+') as ids_file:
         ids_file.write(curr_id.__str__() + '\n')
     print('processing {} photo'.format(curr_id))

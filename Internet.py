@@ -25,7 +25,7 @@ class Internet:
         r = requests.get(image, stream=True)
         if r.status_code == 200:
             with open(file_name, 'wb') as f:
-                for chunk in r.iter_content(chunk_size=512):
+                for chunk in r:
                     f.write(chunk)
         else:
             print(r)
