@@ -44,7 +44,7 @@ def get_count_faces(dir_):
             count += cur_count
             count_of_person += 1
             if count_of_person % 100 == 0:
-                print('now I get ' + count_of_person.__str__() + ' people, current I get ' + count + 'faces')
+                print('now I get ' + count_of_person.__str__() + ' people, current I get ' + count.__str__() + ' faces')
     return count
 
 
