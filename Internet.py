@@ -56,6 +56,10 @@ class Internet:
 
     @staticmethod
     def load_images(images, dir_, need_reload_file, delay=5, load_image_func=load_image_chunk):
+        abs_need_reload_file = os.path.join(dir_, need_reload_file)
+        if not os.path.exists(abs_need_reload_file):
+            f = open(abs_need_reload_file, 'w')
+            f.close()
         for image in images:
             f = os.path.join(dir_, image.split('/')[-1])
             t = Thread(target=Internet.load_image_chunk, args=(image, f, need_reload_file))
