@@ -30,7 +30,7 @@ class DownloaderAllImages:
         while True:
             image_url = site_downloader.get_image_url(curr_id, base_url)
             print(image_url)
-            if image_url is None :
+            if image_url.__str__() == 'None':
                 print('Error while retrieving photos')
                 count404 += 1
                 time.sleep(1)
@@ -92,5 +92,59 @@ class SplashbaseDownloader(SiteDownloader):
                             dir_,
                             ids_file='splashbase_ids.txt',
                             base_url='http://www.splashbase.co/images/',
+                            need_reload_file='need_reload.txt'):
+        DownloaderAllImages.download_all_images(dir_, ids_file, base_url, need_reload_file, self)
+
+
+class MotaRuDownloader(SiteDownloader):
+    def get_image_url(self, id_, base_url='http://www.mota.ru/wallpapers/source/id/'):
+        url = base_url + id_.__str__()
+        user_agent = random.choice(setup.user_agents)
+        try:
+            req = Request(url, headers={'User-Agent': user_agent})
+            print('Try to get image from ' + url)
+            soup = BeautifulSoup(urlopen(req).read())
+        except HTTPError as e:
+            print("Error in opening " + e.code.__str__())
+            return 'None'
+        else:
+            for link in soup.find_all('img'):
+                if 'wallpaper' in link.get('class'):
+                    return link.get('src')
+
+    def download_all_images(self,
+                            dir_,
+                            ids_file='mota_ids.txt',
+                            base_url='http://www.mota.ru/wallpapers/source/id/',
+                            need_reload_file='need_reload.txt'):
+        DownloaderAllImages.download_all_images(dir_, ids_file, base_url, need_reload_file, self)
+
+
+class AlphacodersComDownloader(SiteDownloader):
+    def get_image_url(self, id_, base_url='http://art.alphacoders.com/arts/view/'):
+        url = base_url + id_.__str__()
+        user_agent = random.choice(setup.user_agents)
+        try:
+            req = Request(url, headers={'User-Agent': user_agent})
+            print('Try to get image from ' + url)
+            soup = BeautifulSoup(urlopen(req).read())
+            redirect = getattr(req, 'redirect_dict', '')
+            if redirect:
+                print("Error in opening: redirect")
+                return 'None'
+        except HTTPError as e:
+            print("Error in opening " + e.code.__str__())
+            return 'None'
+        else:
+            links = soup.find_all('img')
+            for link in links:
+                if 'main_wallpaper' in link.get('id'):
+                    print(link.get('src'))
+                    return link.get('src')
+
+    def download_all_images(self,
+                            dir_,
+                            ids_file='alphacoders_ids.txt',
+                            base_url='http://art.alphacoders.com/arts/view/',
                             need_reload_file='need_reload.txt'):
         DownloaderAllImages.download_all_images(dir_, ids_file, base_url, need_reload_file, self)

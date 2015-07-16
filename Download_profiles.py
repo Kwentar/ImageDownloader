@@ -1,7 +1,7 @@
 import os
 import ImageProcessor
 from Internet import Internet
-from SiteDownloader import SplashbaseDownloader
+from SiteDownloader import PexelsDownloader, AlphacodersComDownloader, MotaRuDownloader
 from vk import Vk, VkUser
 from sys import platform as _platform
 
@@ -162,6 +162,12 @@ def downloaded_friends(user_ids, dir_, deep=2):
 
 # ImageProcessor.get_faces('E:\\vk\\friends')
 # print(ImageProcessor.get_count_faces('E:\\vk\\'))
-s = SplashbaseDownloader()
-print(s.download_all_images(dir_='D:\\Graphics\\Wallpaper\\Splashbase'))
+s = PexelsDownloader()
+a = AlphacodersComDownloader()
+m = MotaRuDownloader()
+try:
+    
+
+print(s.download_all_images(dir_='D:\\Graphics\\pexels', ids_file='ids.txt'))
+print(a.download_all_images(dir_='D:\\Graphics\\AlphacodersCom'))
 # download_users(23, 23, 10, 'F:\\vk\\downloaded_users.txt')
