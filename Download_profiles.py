@@ -165,9 +165,17 @@ def downloaded_friends(user_ids, dir_, deep=2):
 s = PexelsDownloader()
 a = AlphacodersComDownloader()
 m = MotaRuDownloader()
-try:
-    
+iter = 0
+while True:
+    print("iter is {}".format(iter))
+    try:
+        print(a.download_all_images(dir_='D:\\Graphics\\AlphacodersCom'))
+    except:
+        print('Error on Alphacoders')
+    try:
+        print(m.download_all_images(dir_='D:\\Graphics\\mota'))
+    except:
+        print('Error on Mota')
+    iter += 1
 
-print(s.download_all_images(dir_='D:\\Graphics\\pexels', ids_file='ids.txt'))
-print(a.download_all_images(dir_='D:\\Graphics\\AlphacodersCom'))
 # download_users(23, 23, 10, 'F:\\vk\\downloaded_users.txt')

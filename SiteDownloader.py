@@ -139,7 +139,6 @@ class AlphacodersComDownloader(SiteDownloader):
             links = soup.find_all('img')
             for link in links:
                 if 'main_wallpaper' in link.get('id'):
-                    print(link.get('src'))
                     return link.get('src')
 
     def download_all_images(self,
