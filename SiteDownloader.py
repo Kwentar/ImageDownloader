@@ -29,7 +29,8 @@ class DownloaderAllImages:
                 curr_id = max(ids)
         while True:
             image_url = site_downloader.get_image_url(curr_id, base_url)
-            if image_url == 'None':
+            print(image_url)
+            if image_url is None :
                 print('Error while retrieving photos')
                 count404 += 1
                 time.sleep(1)
@@ -40,8 +41,8 @@ class DownloaderAllImages:
             with open(abs_ids_file, 'a+') as ids_file:
                 ids_file.write(curr_id.__str__() + '\n')
             print('processing {} photo'.format(curr_id))
-            if count404 >= 100:
-                print('more or equal 100 404 errors, curr id is ' + curr_id.__str__())
+            if count404 >= 1000:
+                print('more or equal 1000 404 errors, curr id is ' + curr_id.__str__())
                 break
             curr_id += 1
 
