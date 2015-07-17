@@ -21,11 +21,12 @@ class Internet:
                 need_reload.write(image + "," + file_name + '\n')
 
     @staticmethod
+
     def load_image_chunk(image, file_name, need_reload_file):
         r = requests.get(image, stream=True)
         if r.status_code == 200:
             with open(file_name, 'wb') as f:
-                for chunk in r:
+                for chunk in r.iter_content(chunk_size=2048):
                     f.write(chunk)
         else:
             print(r)
