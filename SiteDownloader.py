@@ -1,11 +1,13 @@
 import os
 import random
 import time
+from urllib import request
 import Internet
 import __setup_photo__ as setup
 from bs4 import BeautifulSoup
 from urllib.request import urlopen, Request, HTTPError
 from abc import ABCMeta, abstractmethod
+import requests
 
 
 class SiteDownloader:
@@ -14,6 +16,9 @@ class SiteDownloader:
     @abstractmethod
     def get_image_url(self, id_, base_url):
         """Here must be parser of site url witch return link on image"""
+    @abstractmethod
+    def download_all_images(self, dir_, ids_file, base_url,  need_reload_file):
+        """method which must download all images from site"""
 
 
 class DownloaderAllImages:
@@ -148,5 +153,27 @@ class AlphacodersComDownloader(SiteDownloader):
                             need_reload_file='need_reload.txt'):
         DownloaderAllImages.download_all_images(dir_, ids_file, base_url, need_reload_file, self)
 
-#TODO: http://www.freephotosbank.com/12581.html
+
+class FreephotosbankComDownloader(SiteDownloader):
+    def get_image_url(self, id_, base_url='http://www.freephotosbank.com/download.php?type=image&pic='):
+        url = base_url + id_.__str__()
+        user_agent = random.choice(setup.user_agents)
+        try:
+            req = requests.get(url, headers={'User-Agent': user_agent}, stream=True)
+            if req.history:
+                print("Error in opening: redirect")
+                return 'None'
+        except HTTPError as e:
+            print("Error in opening " + e.code.__str__())
+            return 'None'
+        else:
+            return url
+
+    def download_all_images(self,
+                            dir_,
+                            ids_file='freephotosbank_ids.txt',
+                            base_url='http://www.freephotosbank.com/download.php?type=image&pic=',
+                            need_reload_file='need_reload.txt'):
+        DownloaderAllImages.download_all_images(dir_, ids_file, base_url, need_reload_file, self)
+
 #TODO: http://morguefile.com/archive/display/10002

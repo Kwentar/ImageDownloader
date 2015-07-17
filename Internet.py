@@ -21,13 +21,21 @@ class Internet:
                 need_reload.write(image + "," + file_name + '\n')
 
     @staticmethod
-
-    def load_image_chunk(image, file_name, need_reload_file):
+    def load_image_chunk(image, file_name, dir_):
         r = requests.get(image, stream=True)
         if r.status_code == 200:
-            with open(file_name, 'wb') as f:
-                for chunk in r.iter_content(chunk_size=2048):
-                    f.write(chunk)
+            try:
+                with open(file_name, 'wb') as f:
+                    for chunk in r.iter_content(chunk_size=2048):
+                        f.write(chunk)
+            except OSError as err_:
+                print(err_.__str__(), 'try redownload...')
+                file_name = os.path.join(dir_, file_name.split('=')[-1] + '.jpg')
+                with open(file_name, 'wb') as f:
+                    for chunk in r.iter_content(chunk_size=2048):
+                        f.write(chunk)
+
+
         else:
             print(r)
 
@@ -56,14 +64,14 @@ class Internet:
                 Internet.write_to_need_reload(file_name, image, need_reload_file)
 
     @staticmethod
-    def load_images(images, dir_, need_reload_file, delay=5, load_image_func=load_image_chunk):
+    def load_images(images, dir_, need_reload_file, delay=5):
         abs_need_reload_file = os.path.join(dir_, need_reload_file)
         if not os.path.exists(abs_need_reload_file):
             f = open(abs_need_reload_file, 'w')
             f.close()
         for image in images:
             f = os.path.join(dir_, image.split('/')[-1])
-            t = Thread(target=Internet.load_image_chunk, args=(image, f, need_reload_file))
+            t = Thread(target=Internet.load_image_chunk, args=(image, f, dir_))
             t.start()
             t.join(delay)
             if t.isAlive():

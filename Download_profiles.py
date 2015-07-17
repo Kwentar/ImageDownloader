@@ -1,7 +1,7 @@
 import os
 import ImageProcessor
 from Internet import Internet
-from SiteDownloader import PexelsDownloader, AlphacodersComDownloader, MotaRuDownloader
+from SiteDownloader import FreephotosbankComDownloader, AlphacodersComDownloader, MotaRuDownloader
 from vk import Vk, VkUser
 from sys import platform as _platform
 
@@ -162,8 +162,24 @@ def downloaded_friends(user_ids, dir_, deep=2):
 
 # ImageProcessor.get_faces('E:\\vk\\friends')
 # print(ImageProcessor.get_count_faces('E:\\vk\\'))
-s = PexelsDownloader()
-print(s.download_all_images(dir_='E:\\Graphics\\negatives\\pexels', ids_file='ids.txt'))
-
+a = AlphacodersComDownloader()
+m = MotaRuDownloader()
+f = FreephotosbankComDownloader()
+iter = 0
+while True:
+    print("iter is {}".format(iter))
+    try:
+        print(f.download_all_images(dir_='D:\\Graphics\\Freephotosbank'))
+    except:
+        print('error in Freephotosbank')
+    try:
+        print(a.download_all_images(dir_='D:\\Graphics\\AlphacodersCom'))
+    except:
+        print('error in alphaCoders')
+    try:
+        print(m.download_all_images(dir_='D:\\Graphics\\mota'))
+    except:
+        print('error in mota')
+    iter += 1
 
 # download_users(23, 23, 10, 'F:\\vk\\downloaded_users.txt')
