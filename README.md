@@ -7,3 +7,5 @@ Splashbase.co
 mota.ru
 art.alphacoders.com
 freephotosbank.com
+
+For ImageProccesor need opencv 3.0 for python3
