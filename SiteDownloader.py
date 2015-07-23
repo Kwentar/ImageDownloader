@@ -176,4 +176,4 @@ class FreephotosbankComDownloader(SiteDownloader):
                             need_reload_file='need_reload.txt'):
         DownloaderAllImages.download_all_images(dir_, ids_file, base_url, need_reload_file, self)
 
-#TODO: http://morguefile.com/archive/display/10002
+# TODO: http://morguefile.com/archive/display/10002
