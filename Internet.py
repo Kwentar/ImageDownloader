@@ -28,6 +28,12 @@ class Internet:
                 need_reload.write(image_url + "," + file_name + '\n')
 
     @staticmethod
+    def write_response_to_file(response, file_name):
+        with open(file_name, 'wb') as f:
+            for chunk in response.iter_content(chunk_size=2048):
+                f.write(chunk)
+
+    @staticmethod
     def load_image_chunk(image_url, file_name, dir_):
         """
         Loading image by URL
@@ -39,15 +45,11 @@ class Internet:
         r = requests.get(image_url, stream=True)
         if r.status_code == requests.codes.ok:
             try:
-                with open(file_name, 'wb') as f:
-                    for chunk in r.iter_content(chunk_size=2048):
-                        f.write(chunk)
+                Internet.write_response_to_file(r, file_name)
             except OSError as err_:
                 print(err_.__str__(), 'try redownload...')
                 file_name = os.path.join(dir_, file_name.split('=')[-1] + '.jpg')
-                with open(file_name, 'wb') as f:
-                    for chunk in r.iter_content(chunk_size=2048):
-                        f.write(chunk)
+                Internet.write_response_to_file(r, file_name)
         else:
             print(r)
 
@@ -85,10 +87,10 @@ class Internet:
         :param delay: delay for thread
         :return:None
         """
-        abs_need_reload_file = os.path.join(dir_, failed_image_urls_file)
-        if not os.path.exists(abs_need_reload_file):
-            f = open(abs_need_reload_file, 'w')
-            f.close()
+        abs_failed_image_urls_file = os.path.join(dir_, failed_image_urls_file)
+        if not os.path.exists(abs_failed_image_urls_file):
+            with open(abs_failed_image_urls_file, 'w') as _:
+                pass
         for image in image_url_list:
             f = os.path.join(dir_, image.split('/')[-1])
             t = Thread(target=Internet.load_image_chunk, args=(image, f, dir_))
@@ -96,5 +98,5 @@ class Internet:
             t.join(delay)
             if t.isAlive():
                 print('Bad, bad thread!')
-                if failed_image_urls_file is not None:
-                    Internet.write_to_failed_image_urls_file(f, image, failed_image_urls_file)
+                if abs_failed_image_urls_file is not None:
+                    Internet.write_to_failed_image_urls_file(f, image, abs_failed_image_urls_file)
