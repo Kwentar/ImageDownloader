@@ -91,8 +91,9 @@ class Internet:
         if not os.path.exists(abs_failed_image_urls_file):
             with open(abs_failed_image_urls_file, 'w') as _:
                 pass
-        for image in image_url_list:
+        for index, image in enumerate(image_url_list):
             f = os.path.join(dir_, image.split('/')[-1])
+            print('downloading {}: {}...'.format(index, f))
             t = Thread(target=Internet.load_image_chunk, args=(image, f, dir_))
             t.start()
             t.join(delay)
