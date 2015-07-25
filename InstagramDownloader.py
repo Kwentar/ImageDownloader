@@ -47,4 +47,4 @@ def download_user_photos(instagram_api, user_name, dir_):
 
 access_token = setup.inst_access_token
 api = InstagramAPI(access_token=setup.inst_access_token)
-download_user_photos(api, 'tyulkina_j', '/home/instagram')
+download_user_photos(api, 'kwentar4ik', '/home/instagram')
