@@ -80,7 +80,7 @@ class Internet:
     @staticmethod
     def load_images(image_url_list, dir_, failed_image_urls_file, delay=5):
         """
-        loading list of images
+        Loading list of images
         :param image_url_list: list of image urls
         :param dir_: destination dir
         :param failed_image_urls_file: name of file with unsuccessful urls
