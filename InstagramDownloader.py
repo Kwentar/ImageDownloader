@@ -15,7 +15,7 @@ def get_user_id_by_name(instagram_api, user_name):
         return None
 
 
-def download_photos_by_tag(instagram_api, tag, dir_):
+def download_photos_by_tag(instagram_api, tag, dir_, max_photos=0):
     """
     Download all photos with this tag
     :param instagram_api: instagram api by python-instagram package
@@ -29,6 +29,8 @@ def download_photos_by_tag(instagram_api, tag, dir_):
     while True:
         image_list += [el.images['standard_resolution'].url for el in response]
         print('current count is {}'.format(len(image_list)))
+        if max_photos and len(image_list) >= max_photos:
+            break
         if next_ is not None and max_id_str in next_:
             max_index = next_.find(max_id_str) + len(max_id_str)
             max_id = next_[max_index:]
