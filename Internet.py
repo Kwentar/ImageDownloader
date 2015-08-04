@@ -45,7 +45,10 @@ class Internet:
         r = requests.get(image_url, stream=True)
         if r.status_code == requests.codes.ok:
             try:
-                Internet.write_response_to_file(r, file_name)
+                if os.path.exists(file_name):
+                    print("file ", file_name, " exist now")
+                else:
+                    Internet.write_response_to_file(r, file_name)
             except OSError as err_:
                 print(err_.__str__(), 'try redownload...')
                 file_name = os.path.join(dir_, file_name.split('=')[-1] + '.jpg')
@@ -66,8 +69,11 @@ class Internet:
     @staticmethod
     def load_image(image, file_name, need_reload_file):
         try:
-            urllib.request.urlretrieve(image, file_name)
-            print("".join(['downloaded ', image]))
+            if os.path.exists(file_name):
+                print("file ", file_name, " exist now")
+            else:
+                urllib.request.urlretrieve(image, file_name)
+                print("".join(['downloaded ', image]))
         except urllib.error.ContentTooShortError as err_:
             print("".join(['ERROR ', err_.__str__()]))
             if need_reload_file is not None:
@@ -80,7 +86,7 @@ class Internet:
     @staticmethod
     def load_images(image_url_list, dir_, failed_image_urls_file, delay=5):
         """
-        loading list of images
+        Loading list of images
         :param image_url_list: list of image urls
         :param dir_: destination dir
         :param failed_image_urls_file: name of file with unsuccessful urls
