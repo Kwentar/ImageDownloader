@@ -45,10 +45,7 @@ class Internet:
         r = requests.get(image_url, stream=True)
         if r.status_code == requests.codes.ok:
             try:
-                if os.path.exists(file_name):
-                    print("file ", file_name, " exist now")
-                else:
-                    Internet.write_response_to_file(r, file_name)
+                Internet.write_response_to_file(r, file_name)
             except OSError as err_:
                 print(err_.__str__(), 'try redownload...')
                 file_name = os.path.join(dir_, file_name.split('=')[-1] + '.jpg')
@@ -99,11 +96,14 @@ class Internet:
                 pass
         for index, image in enumerate(image_url_list):
             f = os.path.join(dir_, image.split('/')[-1])
-            print('downloading {}: {}...'.format(index, f))
-            t = Thread(target=Internet.load_image_chunk, args=(image, f, dir_))
-            t.start()
-            t.join(delay)
-            if t.isAlive():
-                print('Bad, bad thread!')
-                if abs_failed_image_urls_file is not None:
-                    Internet.write_to_failed_image_urls_file(f, image, abs_failed_image_urls_file)
+            if os.path.exists(f):
+                print("file ", f, " exist now")
+            else:
+                print('downloading {}: {}...'.format(index, f))
+                t = Thread(target=Internet.load_image_chunk, args=(image, f, dir_))
+                t.start()
+                t.join(delay)
+                if t.isAlive():
+                    print('Bad, bad thread!')
+                    if abs_failed_image_urls_file is not None:
+                        Internet.write_to_failed_image_urls_file(f, image, abs_failed_image_urls_file)

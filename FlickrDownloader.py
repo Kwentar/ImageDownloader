@@ -23,7 +23,8 @@ def download_photos_by_text(search_text, dir_, failed_image_urls_file='failed_im
                                           content_type='1',
                                           media='photos',
                                           page=curr_page,
-                                          privacy_filter='1')
+                                          privacy_filter='1',
+                                          sort='relevance')
             if photos['stat'] == 'ok':
                 count_pages = photos['photos']['pages']
                 photos_list = photos['photos']['photo']
@@ -44,4 +45,4 @@ def download_photos_by_text(search_text, dir_, failed_image_urls_file='failed_im
             print("error: ", _err)
 
 
-download_photos_by_text('empty city', '/home/kwent/Downloads/flickr/emptycity')
+download_photos_by_text('empty city', 'F:\\Graphics\\negatives\\flickr\\emptycity')
