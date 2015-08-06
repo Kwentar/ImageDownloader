@@ -48,7 +48,12 @@ class Internet:
                 Internet.write_response_to_file(r, file_name)
             except OSError as err_:
                 print(err_.__str__(), 'try redownload...')
-                file_name = os.path.join(dir_, file_name.split('=')[-1] + '.jpg')
+                index = 0
+                while True:
+                    file_name = os.path.join(dir_, index.__str__() + '.jpg')
+                    if not os.path.exists(file_name):
+                        break
+                    index += 1
                 Internet.write_response_to_file(r, file_name)
         else:
             print(r)

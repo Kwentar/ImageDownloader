@@ -43,6 +43,10 @@ def download_photos_by_text(search_text, dir_, failed_image_urls_file='failed_im
                 print('Error: failed to get images ' + photos['stat'])
         except TypeError as _err:
             print("error: ", _err)
+        except TimeoutError as _err:
+            print("error: ", _err)
+    print('curr page is ', curr_page)
+    print('count pages is', count_pages)
 
 
 download_photos_by_text('empty city', 'F:\\Graphics\\negatives\\flickr\\emptycity')

@@ -11,6 +11,7 @@ import requests
 
 
 class SiteDownloader:
+    """Abstract class for downloading images from site with url of image like url.com/id"""
     __metaclass__ = ABCMeta
 
     @abstractmethod
@@ -24,6 +25,15 @@ class SiteDownloader:
 class DownloaderAllImages:
     @staticmethod
     def download_all_images(dir_, ids_file_name, base_url, need_reload_file, site_downloader):
+        """
+        download all images with site_downloader
+        :param dir_: dir for images
+        :param ids_file_name: tmp file which contains downloaded ids
+        :param base_url: base url of site: url.com/images/
+        :param need_reload_file: name of tmp file with fails
+        :param site_downloader: heir of SiteDownloader
+        :return: None
+        """
         curr_id = 0
         count404 = 0
         abs_ids_file = os.path.join(dir_, ids_file_name)
@@ -53,7 +63,6 @@ class DownloaderAllImages:
 
 
 class PexelsDownloader(SiteDownloader):
-
     def get_image_url(self, id_, base_url='http://www.pexels.com/photo/'):
         url = base_url + id_.__str__()
         user_agent = random.choice(setup.user_agents)
