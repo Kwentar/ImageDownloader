@@ -26,7 +26,8 @@ def download_photos_by_text(search_text, dir_, failed_image_urls_file='failed_im
                                           privacy_filter='1',
                                           sort='relevance')
             if photos['stat'] == 'ok':
-                count_pages = photos['photos']['pages']
+                if photos['photos']['pages'] > count_pages:
+                    count_pages = photos['photos']['pages']
                 photos_list = photos['photos']['photo']
                 url_list = list()
                 for item in photos_list:
@@ -49,4 +50,4 @@ def download_photos_by_text(search_text, dir_, failed_image_urls_file='failed_im
     print('count pages is', count_pages)
 
 
-download_photos_by_text('empty city', 'F:\\Graphics\\negatives\\flickr\\emptycity')
+download_photos_by_text('nature', '/media/kwent/A278648A78645F53/Graphics/negatives/flickr/nature')
