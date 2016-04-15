@@ -24,7 +24,7 @@ def download_photos_by_text(search_text, dir_, failed_image_urls_file='failed_im
                                           media='photos',
                                           page=curr_page,
                                           privacy_filter='1',
-                                          sort='relevance')
+                                          sort='relevant')
             if photos['stat'] == 'ok':
                 if photos['photos']['pages'] > count_pages:
                     count_pages = photos['photos']['pages']
@@ -50,4 +50,4 @@ def download_photos_by_text(search_text, dir_, failed_image_urls_file='failed_im
     print('count pages is', count_pages)
 
 
-download_photos_by_text('nature', '/media/kwent/A278648A78645F53/Graphics/negatives/flickr/nature')
+download_photos_by_text('empty street', 'F:\\Graphics\\negatives\\flickr\\emptystreet')

@@ -163,7 +163,7 @@ def downloaded_friends(user_ids, dir_, deep=2):
 
 # ImageProcessor.get_faces('E:\\vk\\friends')
 # print(ImageProcessor.get_count_faces('E:\\vk\\'))
-a = AlphacodersComDownloader()
+'''a = AlphacodersComDownloader()
 m = MotaRuDownloader()
 f = FreephotosbankComDownloader()
 iter = 0
@@ -183,4 +183,4 @@ while True:
         print('error in mota')
     iter += 1
 
-# download_users(23, 23, 10, 'F:\\vk\\downloaded_users.txt')
+# download_users(23, 23, 10, 'F:\\vk\\downloaded_users.txt')'''

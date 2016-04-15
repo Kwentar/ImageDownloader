@@ -105,7 +105,8 @@ class Vk:
             print('URLError: ' + err_.errno.__str__() + ", " + err_.reason.__str__())
         except http.client.BadStatusLine as err_:
             print("".join(['ERROR Vk.call_api', err_.__str__()]))
-
+        except ConnectionResetError as err_:
+            print("".join(['ERROR ConnectionResetError', err_.__str__()]))
         return list()
 
     @staticmethod
@@ -209,8 +210,8 @@ class Vk:
         q.append(('rev', '1'))
         q.append(('extended', '1'))
         q.append(('photos_size', '1'))
-        r = Vk.call_api('photos.get', q,)
-        images = list()
+        r = Vk.call_api('photos.get', q)
+        images = {}
         for i in r:
             url_of_image = ''
             if 'src_xxxbig' in i.keys():
@@ -222,7 +223,11 @@ class Vk:
             elif 'src_big' in i.keys():
                 url_of_image = i['src_big']
             if url_of_image:
-                images.append(url_of_image)
+                if 'likes' in i.keys():
+                    images[url_of_image] = i['likes']['count']
+                else:
+                    images[url_of_image] = 0
+
                 print("".join(['added ', url_of_image]))
         return images
 
