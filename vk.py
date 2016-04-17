@@ -107,6 +107,8 @@ class Vk:
             print("".join(['ERROR Vk.call_api', err_.__str__()]))
         except ConnectionResetError as err_:
             print("".join(['ERROR ConnectionResetError', err_.__str__()]))
+        except ConnectionAbortedError as err_:
+            print("".join(['ERROR ConnectionAbortedError', err_.__str__()]))
         return list()
 
     @staticmethod

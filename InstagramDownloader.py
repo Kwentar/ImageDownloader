@@ -84,6 +84,6 @@ def download_user_photos(instagram_api, user_name, dir_, tag=''):
 
 access_token = setup.inst_access_token
 api = InstagramAPI(access_token=setup.inst_access_token)
-# download_user_photos(api, '', 'D:\\Graphics\\Download\\instagram', tag='killfish')
-download_photos_by_tag(api, 'emptycity', 'D:\\Graphics\\Download\\instagram')
+download_user_photos(api, 'staceyalexx', 'D:\\Graphics\\Download\\instagram', tag='')
+# download_photos_by_tag(api, 'nopeople', 'D:\\Graphics\\Download\\instagram')
 # (response, next_) = instagram_api.tag_recent_media(tag_name='tag', count=100, max_tag_id=max_id)

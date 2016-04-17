@@ -24,16 +24,19 @@ def get_profile_photos(id_, start_dir, downloaded_users_file, need_reload_file):
     print('LOADED id = ' + id_.__str__())
 
 max_id = 360553663
-vk_dir = "D:\\Graphics\\vk"
+vk_dir = "H:\\vk"
 file_downloaded = "downloaded_users.txt"
 file_need_reload = "need_reload.txt"
-id_ = 1
+id_ = 2
 
 ready_users = Download_profiles.get_lists_from_file(os.path.join(vk_dir, file_downloaded))
-ready_ids = list(map(int, map(str.strip, ready_users)))
-id_ = 1 if not ready_ids else max(ready_ids) + 1
+ready_ids = list(map(str.strip, ready_users))
+id_ = 1# if not ready_ids else max(ready_ids) + 1
 
 while id_ < max_id:
+    if Download_profiles.check_in_file(id_.__str__(), ready_ids):
+        id_ += 113
+        continue
     get_profile_photos(id_, vk_dir, os.path.join(vk_dir, file_downloaded), os.path.join(vk_dir, file_need_reload))
-    id_ += 1
+    id_ += 113
 
