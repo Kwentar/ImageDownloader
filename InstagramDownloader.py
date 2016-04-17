@@ -21,6 +21,7 @@ def download_photos_by_tag(instagram_api, tag, dir_, max_photos=0):
     :param instagram_api: instagram api by python-instagram package
     :param tag: tag for search
     :param dir_: dir for photos
+    :param max_photos: max count of photos for this tag
     :return: None
     """
     (response, next_) = instagram_api.tag_recent_media(tag_name=tag, count=100)
@@ -82,8 +83,9 @@ def download_user_photos(instagram_api, user_name, dir_, tag=''):
     Internet.load_images(image_list, dir_, failed_image_urls_file="need_reload.txt", delay=300)
 
 
-access_token = setup.inst_access_token
 api = InstagramAPI(access_token=setup.inst_access_token)
-download_user_photos(api, 'staceyalexx', 'D:\\Graphics\\Download\\instagram', tag='')
-# download_photos_by_tag(api, 'nopeople', 'D:\\Graphics\\Download\\instagram')
+# download_user_photos(api, '', 'D:\\Graphics\\Download\\instagram', tag='killfish')
+tags = ['eiffeltower', 'родинамать', 'statueofliberty', 'leaningtowerofpisa', 'christtheredeemer']
+for tag in tags:
+    download_photos_by_tag(api, tag, '/home/kwent/bases/monuments', 10000)
 # (response, next_) = instagram_api.tag_recent_media(tag_name='tag', count=100, max_tag_id=max_id)

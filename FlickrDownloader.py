@@ -1,11 +1,14 @@
+import os
+
 from Internet import Internet
 import __setup_photo__ as setup
 import flickrapi
 
 
-def download_photos_by_text(search_text, dir_, failed_image_urls_file='failed_image_urls.txt'):
+def download_photos_by_text(search_text, dir_, failed_image_urls_file='failed_image_urls.txt', max_images=10000):
     """
     Download all photo from flickr by text request search_text (for example: 'nature')
+    :param max_images: maximum count images for this search_text
     :param search_text: text request for flickr
     :param dir_: dir for downloaded photos
     :param failed_image_urls_file: text file with downloading which failed
@@ -16,7 +19,7 @@ def download_photos_by_text(search_text, dir_, failed_image_urls_file='failed_im
     count_pages = 2
     curr_page = 1
     count_urls = 0
-    while curr_page < count_pages:
+    while curr_page < count_pages and curr_page*10 < max_images:
         try:
             photos = flickr.photos.search(text=search_text,
                                           per_page='10',
@@ -24,7 +27,7 @@ def download_photos_by_text(search_text, dir_, failed_image_urls_file='failed_im
                                           media='photos',
                                           page=curr_page,
                                           privacy_filter='1',
-                                          sort='relevant')
+                                          sort='relevance')
             if photos['stat'] == 'ok':
                 if photos['photos']['pages'] > count_pages:
                     count_pages = photos['photos']['pages']
@@ -39,6 +42,8 @@ def download_photos_by_text(search_text, dir_, failed_image_urls_file='failed_im
                 curr_page += 1
                 count_urls += len(url_list)
                 print("processing {}-{} photos".format(count_urls-len(url_list), count_urls))
+                if not os.path.exists(dir_):
+                    os.mkdir(dir_)
                 Internet.load_images(url_list, dir_, failed_image_urls_file, delay=60)
             else:
                 print('Error: failed to get images ' + photos['stat'])
@@ -49,5 +54,6 @@ def download_photos_by_text(search_text, dir_, failed_image_urls_file='failed_im
     print('curr page is ', curr_page)
     print('count pages is', count_pages)
 
-
-download_photos_by_text('empty street', 'F:\\Graphics\\negatives\\flickr\\emptystreet')
+flowers = ['daisy', 'aster', 'tulip']
+for flower in flowers:
+    download_photos_by_text(flower, os.path.join('/home/kwent/bases/flowers', flower), max_images=2000)
