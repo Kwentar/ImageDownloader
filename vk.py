@@ -27,21 +27,23 @@ class VkUser:
         if year_b == -1:
             year_b = date.today().year - age
             if month_b < date.today().month or month_b == date.today().month and day_b < date.today().day:
-                year_b - 1
+                year_b -= 1
         self.year_b = year_b
         self.sex = sex
         self.city_id = city_id
 
     def __str__(self):
-        return ";".join([self.uid, self.name, self.last_name, self.day_b.__str__(),
-                         self.month_b.__str__(), self.year_b.__str__(), self.sex.__str__(), self.city_id.__str__()])
+        return ";".join([self.uid, self.name, self.last_name,
+                         self.day_b.__str__(), self.month_b.__str__(),
+                         self.year_b.__str__(), self.sex.__str__(),
+                         self.city_id.__str__()])
 
     def get_age(self):
         return date.today().year - self.year_b
 
 
 class Vk:
-    tokens = setup.tokens
+    tokens = setup.user_tokens
     curr_token = ''
     p = Profiler()
 
@@ -59,9 +61,9 @@ class Vk:
     @staticmethod
     def get_token():
         while True:
-            el = random.choice(setup.tokens)
+            el = random.choice(Vk.tokens)
             if el != Vk.curr_token:
-                test_url = 'https://api.vk.com/method/getProfiles?uid=66748&access_token=' + el
+                test_url = 'https://api.vk.com/method/getProfiles?uid=66748&v=5.103&access_token=' + el
                 Vk.check_time(1)
                 try:
                     response = urlopen(test_url).read()
@@ -86,7 +88,7 @@ class Vk:
         else:
             params_list = [params]
 
-        params_list += [('access_token', Vk.curr_token)]
+        params_list += [('access_token', Vk.curr_token), ('v', '5.103')]
         url = 'https://api.vk.com/method/%s?%s' % (method, urlencode(params_list))
         try:
             req = Request(url=url, headers={'User-agent': random.choice(setup.user_agents)})
@@ -115,7 +117,7 @@ class Vk:
     def get_uids(age, month, day, city_id, fields='sex'):
         search_q = list()
         search_q.append(('offset', '0'))
-        search_q.append(('count', '1000'))
+        search_q.append(('count', '300'))
         search_q.append(('city', city_id))
         search_q.append(('fields', fields))
         search_q.append(('age_from', age))
@@ -124,16 +126,14 @@ class Vk:
         search_q.append(('birth_day', day))
         search_q.append(('birth_month', month))
         r = Vk.call_api('users.search', search_q)
-        count = 0
+        count = r['count']
         users = list()
-        for el in r:
-            if count and 'uid' in el.keys():
-                user = VkUser(uid=el['uid'].__str__(), name=el['first_name'].__str__(),
-                              last_name=el['last_name'].__str__(), sex=el['sex'].__str__(),
+        for el in r['items']:
+            if 'id' in el.keys() and not el['is_closed']:
+                user = VkUser(uid=el['id'].__str__(), name=el['first_name'],
+                              last_name=el['last_name'], sex=el['sex'],
                               day_b=day, month_b=month, age=age, city_id=city_id)
                 users.append(user)
-            else:
-                count = el
         if count > 1000:
             Vk.warning('''Count more than 1000, count = {}, age = {},
                         month = {}, day = {}'''.format(count, age, month, day))
@@ -208,29 +208,16 @@ class Vk:
     def get_profile_photos(id_):
         q = list()
         q.append(('owner_id', id_))
-        q.append(('album_id', 'profile'))
+        q.append(('count', '10'))
         q.append(('rev', '1'))
         q.append(('extended', '1'))
-        q.append(('photos_size', '1'))
-        r = Vk.call_api('photos.get', q)
-        images = {}
-        for i in r:
-            url_of_image = ''
-            if 'src_xxxbig' in i.keys():
-                url_of_image = i['src_xxxbig']
-            elif 'src_xxbig' in i.keys():
-                url_of_image = i['src_xxbig']
-            elif 'src_xbig' in i.keys():
-                url_of_image = i['src_xbig']
-            elif 'src_big' in i.keys():
-                url_of_image = i['src_big']
-            if url_of_image:
-                if 'likes' in i.keys():
-                    images[url_of_image] = i['likes']['count']
-                else:
-                    images[url_of_image] = 0
+        q.append(('photos_size', '0'))
+        r = Vk.call_api('photos.getAll', q)
+        images = []
+        for photo in r['items']:
+            max_photo = max(photo['sizes'], key=lambda x: x['width']*x['height'])
+            images.append(max_photo['url'])
 
-                print("".join(['added ', url_of_image]))
         return images
 
     @staticmethod

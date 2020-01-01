@@ -1,11 +1,4 @@
-.idea/.name
-.idea/encodings.xml
-.idea/misc.xml
-.idea/workspace.xml
 *.iml
-.idea/vcs.xml
 *.pyc
 __setup_photo__.py
-.idea/dictionaries/aleksey_alekseev.xml
-.idea/scopes/scope_settings.xml
-.idea/modules.xml
+.idea/

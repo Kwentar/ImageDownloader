@@ -13,11 +13,11 @@ if _platform == "linux" or _platform == "linux2":
     friends_dir = '/media/kwent/A278648A78645F53/vk/friends'
 
 elif _platform == "win32":
-    vk_dir = 'F:\\vk\\'
-    need_reload_file = 'F:\\vk\\need_reload.txt'
-    #downloaded_users_file = 'F:\\vk\\downloaded_users.txt'
-    users_info_file = 'F:\\vk\\downloaded_users_info.txt'
-    friends_dir = 'F:\\vk\\friends\\'
+    vk_dir = 'D:\\vk\\'
+    need_reload_file = 'D:\\vk\\need_reload.txt'
+    # downloaded_users_file = 'F:\\vk\\downloaded_users.txt'
+    users_info_file = 'D:\\vk\\downloaded_users_info.txt'
+    friends_dir = 'D:\\vk\\friends\\'
 
 
 def check_in_file(uid, lst):
@@ -43,17 +43,17 @@ def get_user_info_from_list(uid, lst):
     return user
 
 
-def get_profile_photos(id_, start_dir, downloaded_users_file):
-    dir_of_photos = os.path.join(start_dir, id_)
+def get_profile_photos(user: VkUser, start_dir, downloaded_users_file, number):
+    dir_of_photos = os.path.join(start_dir, user.uid)
     if not os.path.exists(dir_of_photos):
         os.makedirs(dir_of_photos)
-    images = Vk.get_profile_photos(id_)
-    Internet.load_images(images, dir_of_photos, need_reload_file)
-    with open(downloaded_users_file, 'a+') as downloaded_users:
+    images = Vk.get_profile_photos(user.uid)
+    Internet.load_images(images, dir_of_photos, need_reload_file, number)
+    with open(downloaded_users_file, 'a+', encoding='utf8') as downloaded_users:
         downloaded_users.seek(0)
         lines = downloaded_users.readlines()
-        if not check_in_file(id_, lines):
-            downloaded_users.write(id_ + '\n')
+        if not check_in_file(user.uid, lines):
+            downloaded_users.write(str(user) + '\n')
 
 
 def write_users_to_file(need_to_write_users, users_info_file_friends):
@@ -106,10 +106,10 @@ def download_users(age_from, age_to, city_id, downloaded_users_file):
                         break
                     Vk.get_token()
                 need_to_write_users = list()
-                for user in users:
+                for user_index, user in enumerate(users):
                     if not check_in_file(user.uid, downloaded_users_list):
                         dir_of_photos = os.path.join(vk_dir, age.__str__())
-                        get_profile_photos(user.uid, dir_of_photos, downloaded_users_file)
+                        get_profile_photos(user, dir_of_photos, downloaded_users_file, user_index)
                     if check_in_file(user.uid, users_info_list):
                         print('We have this user in info too! ' + user.name + ' ' + user.last_name)
                     else:
@@ -157,6 +157,7 @@ def downloaded_friends(user_ids, dir_, deep=2):
         downloaded_friends(next_iter_uids, dir_, deep-1)
 
 
+download_users(20, 21, 10, 'tmp.txt')
 
 # downloaded_friends(['11152217'], friends_dir, deep=3)
 # print('I really did it oO')

@@ -3,6 +3,7 @@ import shutil
 from threading import Thread
 import urllib
 import requests
+from tqdm import tqdm
 
 
 class Internet:
@@ -86,9 +87,10 @@ class Internet:
                 Internet.write_to_failed_image_urls_file(file_name, image, need_reload_file)
 
     @staticmethod
-    def load_images(image_url_list, dir_, failed_image_urls_file, delay=5):
+    def load_images(image_url_list, dir_, failed_image_urls_file, number, delay=5):
         """
         Loading list of images
+        :param number: current number of user from all amount of users
         :param image_url_list: list of image urls
         :param dir_: destination dir
         :param failed_image_urls_file: name of file with unsuccessful urls
@@ -99,12 +101,12 @@ class Internet:
         if not os.path.exists(abs_failed_image_urls_file):
             with open(abs_failed_image_urls_file, 'w') as _:
                 pass
-        for index, image in enumerate(image_url_list):
+        for index, image in tqdm(enumerate(image_url_list), total=len(image_url_list), desc=str(number)):
             f = os.path.join(dir_, image.split('/')[-1])
             if os.path.exists(f):
                 print("file ", f, " exist now")
             else:
-                print('downloading {}: {}...'.format(index, f))
+                # print('downloading {}: {}...'.format(index, f))
                 t = Thread(target=Internet.load_image_chunk, args=(image, f, dir_))
                 t.start()
                 t.join(delay)
